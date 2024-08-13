@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import exp from 'constants';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(String(process.env.URL));
@@ -42,17 +41,15 @@ export function toNum(numString: string): number {
 const testData1 = ['CITROEN', 'C3' , 'Benzīns' , 'Manuālā' , '500' , '10000'] as const;
 
 test('search testData1 assert results table and selected link', async ({ page }) => { //Test 1
-  // add open link
   const testData = testData1
   await page.goto(String(process.env.URL) + 'tltr');
+
   await expect(page).toHaveTitle("E-CSDD pakalpojumi");
   await page.getByLabel('Transportlīdzekļa veids:').isVisible()
   await page.locator("#MarkaList").selectOption(testData[0])
   await page.locator('#ModelsList').click()
   await page.locator('#ModelsList').selectOption(testData[1])
   
-  // await page.locator('#MarkaList').click()
-  // await expect(page).toHaveTitle("E-CSDD pakalpojumz");
   await page.getByLabel('Degvielas veids:').selectOption(testData[2])
   await page.locator('#TransmList').selectOption(testData[3])
   await page.locator('#cenano').fill(testData[4])
@@ -97,4 +94,27 @@ test('search testData1 assert results table and selected link', async ({ page })
   await page.getByRole('cell', { name: 'Manuāla' }).isVisible()
   
   // await expect(page).toHaveTitle("E-CSDD pakalpojz");
+});
+
+const testData2 = ['CITROEN', 'C3' , 'Benzīns' , 'Manuālā' , '5' , '6'] as const;
+test('search testData2 assert results negative and selected link', async ({ page }) => { //Test 1
+  const testData = testData2
+  await page.goto(String(process.env.URL) + 'tltr');
+
+  await expect(page).toHaveTitle("E-CSDD pakalpojumi");
+  await page.getByLabel('Transportlīdzekļa veids:').isVisible()
+  await page.locator("#MarkaList").selectOption(testData[0])
+  await page.locator('#ModelsList').click()
+  await page.locator('#ModelsList').selectOption(testData[1])
+  
+  await page.getByLabel('Degvielas veids:').selectOption(testData[2])
+  await page.locator('#TransmList').selectOption(testData[3])
+  await page.locator('#cenano').fill(testData[4])
+  await page.locator('#cenalidz').fill(testData[5])
+  await page.locator('#findExtend').getByText('Visi').click()
+  await page.getByRole('link', { name: 'Meklēt' }).click()
+  await expect(page).toHaveTitle("E-CSDD pakalpojumi");
+
+  await expect(page.locator('//table[@id="vehicles-table"]/tbody/tr[@class="tr-data"]')).toHaveCount(0);
+
 });
